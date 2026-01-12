@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExpenseService } from '../../../../core/services/expense.servise';
 import { Expense } from '../../../../core/models/expense.model';
@@ -8,20 +8,20 @@ import { Expense } from '../../../../core/models/expense.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-  <h3>Expenses</h3>
+    <h3>Expenses</h3>
 
-  <ul class="list">
-    <li *ngFor="let e of expenses">
-      <span>{{ e.date }}</span>
-      <span>{{ e.category }}</span>
-      <span>{{ e.amount }}</span>
-      <button (click)="remove(e.id)">✕</button>
-    </li>
-  </ul>
+    <ul class="list">
+      <li *ngFor="let e of expenses">
+        <span>{{ e.date }}</span>
+        <span>{{ e.category }}</span>
+        <span>{{ e.amount }}</span>
+        <button (click)="remove(e.id)">✕</button>
+      </li>
+    </ul>
 
-  <div class="total">
-    Total: {{ total }}
-  </div>
+    <div class="total">
+      Total: {{ total }}
+    </div>
   `,
   styles: [`
     .list {
@@ -51,26 +51,22 @@ import { Expense } from '../../../../core/models/expense.model';
     }
   `]
 })
-
-export class ExpenseListComponent {
+export class ExpenseListComponent implements OnInit {
   expenses: Expense[] = [];
 
   constructor(public expenseService: ExpenseService) {}
 
   ngOnInit() {
-    this.loadExpenses();
+    this.expenseService.expenses$.subscribe(expenses => {
+      this.expenses = expenses;
+    });
   }
 
   get total(): number {
     return this.expenseService.getTotal();
   }
 
-  loadExpenses() {
-    this.expenses = this.expenseService.getExpenses();
-  }
-
   remove(id: number): void {
     this.expenseService.removeExpense(id);
-    this.loadExpenses();
   }
 }

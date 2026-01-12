@@ -1,20 +1,24 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Expense } from '../models/expense.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ExpenseService {
 
   private readonly STORAGE_KEY = 'expenses';
   private expenses: Expense[] = [];
+
+  private expensesSubject = new BehaviorSubject<Expense[]>([]);
+  readonly expenses$ = this.expensesSubject.asObservable();
+
   private isBrowser: boolean;
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
     if (this.isBrowser) {
       this.load();
+      this.expensesSubject.next([...this.expenses]);
     }
   }
 
@@ -29,18 +33,16 @@ export class ExpenseService {
     }
   }
 
-  getExpenses(): Expense[] {
-    return this.expenses;
-  }
-
   addExpense(expense: Expense): void {
     this.expenses.push(expense);
     this.save();
+    this.expensesSubject.next([...this.expenses]);
   }
 
   removeExpense(id: number): void {
     this.expenses = this.expenses.filter(e => e.id !== id);
     this.save();
+    this.expensesSubject.next([...this.expenses]);
   }
 
   getTotal(): number {

@@ -27,7 +27,6 @@ import { Expense } from '../../../../core/models/expense.model';
       align-items: center;
     }
 
-
     input {
       flex: 1;
       min-width: 120px;
