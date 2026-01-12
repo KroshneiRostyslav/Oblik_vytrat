@@ -10,31 +10,67 @@ import { Expense } from '../../../../core/models/expense.model';
   template: `
   <h3>Expenses</h3>
 
-  <ul>
+  <ul class="list">
     <li *ngFor="let e of expenses">
-      {{ e.date }} — {{ e.category }} — {{ e.amount }}
-      <button (click)="remove(e.id)">X</button>
+      <span>{{ e.date }}</span>
+      <span>{{ e.category }}</span>
+      <span>{{ e.amount }}</span>
+      <button (click)="remove(e.id)">✕</button>
     </li>
   </ul>
 
-  <strong>Total: {{ total }}</strong>
-`
+  <div class="total">
+    Total: {{ total }}
+  </div>
+  `,
+  styles: [`
+    .list {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: 1fr 1fr 80px 40px;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+
+    .total {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    button {
+      background: #ff4d4f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+  `]
 })
 
 export class ExpenseListComponent {
-
   expenses: Expense[] = [];
 
-  constructor(private expenseService: ExpenseService) {
-    this.expenses = this.expenseService.getExpenses();
+  constructor(public expenseService: ExpenseService) {}
+
+  ngOnInit() {
+    this.loadExpenses();
   }
 
   get total(): number {
     return this.expenseService.getTotal();
   }
 
-  remove(id: number): void {
-  this.expenseService.removeExpense(id);
+  loadExpenses() {
+    this.expenses = this.expenseService.getExpenses();
   }
 
+  remove(id: number): void {
+    this.expenseService.removeExpense(id);
+    this.loadExpenses();
+  }
 }

@@ -10,20 +10,45 @@ import { Expense } from '../../../../core/models/expense.model';
   template: `
     <h3>Add expense</h3>
 
-    <input type="number" [(ngModel)]="amount" placeholder="Amount" />
-    <input type="text" [(ngModel)]="category" placeholder="Category" />
-    <input type="date" [(ngModel)]="date" />
+    <div class="form-row">
+      <input type="number" [(ngModel)]="amount" placeholder="Amount" />
+      <input type="text" [(ngModel)]="category" placeholder="Category" />
+      <input type="date" [(ngModel)]="date" />
+      <button (click)="add()">Add</button>
+    </div>
 
-    <button (click)="add()">Add</button>
-  `
+
+  `,
+ styles: [`
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+
+    input {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    button {
+      white-space: nowrap;
+    }
+  `]
 })
 export class ExpenseFormComponent {
 
   amount!: number;
   category = '';
-  date = '';
+  date = this.getToday();
 
   constructor(private expenseService: ExpenseService) {}
+  
+  private getToday(): string {
+    return new Date().toISOString().split('T')[0];
+  }
 
   add(): void {
     const expense: Expense = {
@@ -37,6 +62,5 @@ export class ExpenseFormComponent {
 
     this.amount = 0;
     this.category = '';
-    this.date = '';
   }
 }
