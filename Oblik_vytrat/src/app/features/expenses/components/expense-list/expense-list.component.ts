@@ -1,18 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+
 import { ExpenseService } from '../../../../core/services/expense.servise';
 import { Expense } from '../../../../core/models/expense.model';
 
 @Component({
   selector: 'app-expense-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h3>Expenses</h3>
 
+    <label>
+      Filter by Category:
+      <select (change)="setCategoryFilter($event)">
+        <option value="">All</option>
+        <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
+      </select>
+    </label>
+
+
     <ul class="list">
-      <li *ngFor="let e of expenses$ | async">
+      <li *ngFor="let e of filteredExpenses$ | async">
         <span>{{ e.date }}</span>
         <span>{{ e.category }}</span>
         <span>{{ e.amount }}</span>
@@ -21,62 +33,78 @@ import { Expense } from '../../../../core/models/expense.model';
     </ul>
 
     <div class="total">
-      Total: {{ getTotal(expenses$ | async) }}
-    </div>
-  `,
-  styles: [`
-    .list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    li {
-      display: grid;
-      grid-template-columns: 1fr 1fr 80px 40px;
-      gap: 8px;
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-      align-items: center;
-    }
-
-    li span {
+      Total: {{ total$ | async }}
+    </div>`,
+  styles: [` 
+    .list { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0; 
+    } 
+    li { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr 80px 40px; 
+      gap: 8px; 
+      padding: 6px 0; 
+      border-bottom: 1px solid #eee; 
+      align-items: center; 
+    } 
+    li span { 
       overflow-wrap: break-word;
     }
-
-    .total {
+    .total { 
       margin-top: 10px;
-      font-weight: bold;
+      font-weight: bold; 
     }
-
-    button {
+    button { 
       background-color: #ff4d4f;
-      color: white;
+      color: white; 
       border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-      height: 28px;
-    }
-
-    button:hover {
-      background-color: #ff7875;
+       border-radius: 4px; 
+      cursor: pointer; 
+      width: 100%; 
+      height: 28px; 
+    } 
+    button:hover { 
+      background-color: #ff7875; 
     }
   `]
 })
 export class ExpenseListComponent {
-  expenses$!: Observable<Expense[]>;
+  private categoryFilterSubject = new BehaviorSubject<string | null>(null);
+
+  allExpenses$!: Observable<Expense[]>;
+  categories$!: Observable<string[]>;
+  filteredExpenses$!: Observable<Expense[]>;
+  total$!: Observable<number>;
 
   constructor(private expenseService: ExpenseService) {
-    this.expenses$ = this.expenseService.expenses$;
+    this.allExpenses$ = this.expenseService.expenses$;
+
+    this.categories$ = this.allExpenses$.pipe(
+      map(expenses => [...new Set(expenses.map(e => e.category))])
+    );
+
+    this.filteredExpenses$ = combineLatest([
+      this.allExpenses$,
+      this.categoryFilterSubject
+    ]).pipe(
+      map(([expenses, filter]) =>
+        filter ? expenses.filter(e => e.category === filter) : expenses
+      )
+    );
+
+    this.total$ = this.filteredExpenses$.pipe(
+      map(expenses => expenses.reduce((s, e) => s + e.amount, 0))
+    );
   }
 
-  remove(id: number): void {
+  setCategoryFilter(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.categoryFilterSubject.next(select.value || null);
+  }
+
+  remove(id: number) {
     this.expenseService.removeExpense(id);
-  }
-
-  getTotal(expenses: Expense[] | null | undefined): number {
-    if (!expenses) return 0;
-    return expenses.reduce((sum, e) => sum + e.amount, 0);
   }
 }
