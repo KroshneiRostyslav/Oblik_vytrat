@@ -1,0 +1,39 @@
+<div class="container">
+  <h1>Search Expenses</h1>
+
+  <div class="card">
+    <div class="filters">
+      <label>
+        Category:
+        <select (change)="setCategory($event)">
+          <option value="">All</option>
+          <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
+        </select>
+      </label>
+
+      <label>
+        Min Amount:
+        <input type="number" [(ngModel)]="minAmount" (ngModelChange)="updateFilters()" />
+      </label>
+
+      <label>
+        Max Amount:
+        <input type="number" [(ngModel)]="maxAmount" (ngModelChange)="updateFilters()" />
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <ul class="list">
+      <li *ngFor="let e of filteredExpenses$ | async">
+        <span>{{ e.date }}</span>
+        <span>{{ e.category }}</span>
+        <span>{{ e.amount }}</span>
+      </li>
+    </ul>
+
+    <div class="total">
+      Total: {{ total$ | async }}
+    </div>
+  </div>
+</div>

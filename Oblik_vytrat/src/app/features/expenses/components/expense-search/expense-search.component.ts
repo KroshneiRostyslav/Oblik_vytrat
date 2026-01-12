@@ -11,47 +11,8 @@ import { Expense } from '../../../../core/models/expense.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <h3>Search Expenses</h3>
-
-    <div class="filters">
-      <label>
-        Category:
-        <select (change)="setCategory($event)">
-          <option value="">All</option>
-          <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
-        </select>
-      </label>
-
-      <label>
-        Min Amount:
-        <input type="number" [(ngModel)]="minAmount" (ngModelChange)="updateFilters()" />
-      </label>
-
-      <label>
-        Max Amount:
-        <input type="number" [(ngModel)]="maxAmount" (ngModelChange)="updateFilters()" />
-      </label>
-    </div>
-
-    <ul class="list">
-      <li *ngFor="let e of filteredExpenses$ | async">
-        <span>{{ e.date }}</span>
-        <span>{{ e.category || ' ' }}</span>
-        <span>{{ e.amount }}</span>
-      </li>
-    </ul>
-
-    <div class="total">
-      Total: {{ total$ | async }}
-    </div>
-  `,
-  styles: [`
-    .filters { display: flex; gap: 12px; margin-bottom: 12px; }
-    .list { list-style: none; padding: 0; margin: 0; }
-    li { display: grid; grid-template-columns: 1fr 1fr 80px; gap: 8px; padding: 6px 0; border-bottom: 1px solid #eee; }
-    .total { font-weight: bold; margin-top: 10px; }
-  `]
+  templateUrl: 'expense-search.component.html',
+  styleUrls: ['expense-search.component.css']
 })
 export class ExpenseSearchComponent {
   private categoryFilterSubject = new BehaviorSubject<string | null>(null);
