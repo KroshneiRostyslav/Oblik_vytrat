@@ -82,20 +82,23 @@ export class ExpenseListComponent {
     this.allExpenses$ = this.expenseService.expenses$;
 
     this.categories$ = this.allExpenses$.pipe(
-      map(expenses => [...new Set(expenses.map(e => e.category))])
+      map(expenses =>
+        [...new Set(expenses.map(e => e.category).filter(c => c))]
+      )
     );
+
 
     this.filteredExpenses$ = combineLatest([
       this.allExpenses$,
       this.categoryFilterSubject
     ]).pipe(
       map(([expenses, filter]) =>
-        filter ? expenses.filter(e => e.category === filter) : expenses
+        !filter ? expenses : expenses.filter(e => e.category === filter)
       )
     );
 
     this.total$ = this.filteredExpenses$.pipe(
-      map(expenses => expenses.reduce((s, e) => s + e.amount, 0))
+      map(expenses => expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0))
     );
   }
 
