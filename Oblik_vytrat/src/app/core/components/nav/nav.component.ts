@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   template: `
     <nav class="navbar">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Expenses</a>
-      <a routerLink="/search" routerLinkActive="active">Search</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Витрати</a>
+      <a routerLink="/search" routerLinkActive="active">Пошук</a>
     </nav>
   `,
   styles: [`

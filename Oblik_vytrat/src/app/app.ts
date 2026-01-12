@@ -9,5 +9,5 @@ import { NavComponent } from './core/components/nav/nav.component';
   styleUrls: ['./app.css']
 })
 export class App {
-  readonly title = signal('Oblik_vytrat');
+  readonly title = signal('Облік витрат');
 }

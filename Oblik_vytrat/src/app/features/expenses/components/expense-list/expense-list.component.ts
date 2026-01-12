@@ -12,12 +12,12 @@ import { Expense } from '../../../../core/models/expense.model';
   imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <h3>Expenses</h3>
+    <h3>Витрати</h3>
 
     <label>
-      Filter by Category:
+      Фільтрування за категоріїю:
       <select (change)="setCategoryFilter($event)">
-        <option value="">All</option>
+        <option value="">Всі</option>
         <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
       </select>
     </label>
@@ -33,7 +33,7 @@ import { Expense } from '../../../../core/models/expense.model';
     </ul>
 
     <div class="total">
-      Total: {{ total$ | async }}
+      Загальна сума: {{ total$ | async }}
     </div>`,
   styles: [` 
     .list { 

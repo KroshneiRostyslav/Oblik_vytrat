@@ -8,13 +8,13 @@ import { Expense } from '../../../../core/models/expense.model';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <h3>Add expense</h3>
+    <h3>Додати витрати</h3>
 
     <div class="form-row">
-      <input type="number" [(ngModel)]="amount" placeholder="Amount" />
-      <input type="text" [(ngModel)]="category" placeholder="Category" />
+      <input type="number" [(ngModel)]="amount" placeholder="Сума" />
+      <input type="text" [(ngModel)]="category" placeholder="Категорія" />
       <input type="date" [(ngModel)]="date" />
-      <button (click)="add()">Add</button>
+      <button (click)="add()">Додати</button>
     </div>
 
 
