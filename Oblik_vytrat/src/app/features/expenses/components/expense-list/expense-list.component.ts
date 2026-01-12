@@ -8,17 +8,19 @@ import { Expense } from '../../../../core/models/expense.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <h3>Expenses</h3>
+  <h3>Expenses</h3>
 
-    <ul>
-      <li *ngFor="let e of expenses">
-        {{ e.date }} — {{ e.category }} — {{ e.amount }}
-      </li>
-    </ul>
+  <ul>
+    <li *ngFor="let e of expenses">
+      {{ e.date }} — {{ e.category }} — {{ e.amount }}
+      <button (click)="remove(e.id)">X</button>
+    </li>
+  </ul>
 
-    <strong>Total: {{ total }}</strong>
-  `
+  <strong>Total: {{ total }}</strong>
+`
 })
+
 export class ExpenseListComponent {
 
   expenses: Expense[] = [];
@@ -30,4 +32,9 @@ export class ExpenseListComponent {
   get total(): number {
     return this.expenseService.getTotal();
   }
+
+  remove(id: number): void {
+  this.expenseService.removeExpense(id);
+  }
+
 }
