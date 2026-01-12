@@ -19,23 +19,7 @@ import { Expense } from '../../../../core/models/expense.model';
 
 
   `,
- styles: [`
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr) auto;
-      gap: 8px;
-      align-items: center;
-    }
-
-    input {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    button {
-      white-space: nowrap;
-    }
-  `]
+ styleUrl: 'expense-form.component.css' 
 })
 export class ExpenseFormComponent {
 
