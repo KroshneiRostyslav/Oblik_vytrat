@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 import { ExpenseService } from '../../../../core/services/expense.servise';
 import { Expense } from '../../../../core/models/expense.model';
 
@@ -11,7 +12,7 @@ import { Expense } from '../../../../core/models/expense.model';
     <h3>Expenses</h3>
 
     <ul class="list">
-      <li *ngFor="let e of expenses">
+      <li *ngFor="let e of expenses$ | async">
         <span>{{ e.date }}</span>
         <span>{{ e.category }}</span>
         <span>{{ e.amount }}</span>
@@ -20,13 +21,14 @@ import { Expense } from '../../../../core/models/expense.model';
     </ul>
 
     <div class="total">
-      Total: {{ total }}
+      Total: {{ getTotal(expenses$ | async) }}
     </div>
   `,
   styles: [`
     .list {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
 
     li {
@@ -38,35 +40,43 @@ import { Expense } from '../../../../core/models/expense.model';
       align-items: center;
     }
 
+    li span {
+      overflow-wrap: break-word;
+    }
+
     .total {
       margin-top: 10px;
       font-weight: bold;
     }
 
     button {
-      background: #ff4d4f;
+      background-color: #ff4d4f;
       color: white;
       border: none;
       border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      height: 28px;
+    }
+
+    button:hover {
+      background-color: #ff7875;
     }
   `]
 })
-export class ExpenseListComponent implements OnInit {
-  expenses: Expense[] = [];
+export class ExpenseListComponent {
+  expenses$!: Observable<Expense[]>;
 
-  constructor(public expenseService: ExpenseService) {}
-
-  ngOnInit() {
-    this.expenseService.expenses$.subscribe(expenses => {
-      this.expenses = expenses;
-    });
-  }
-
-  get total(): number {
-    return this.expenseService.getTotal();
+  constructor(private expenseService: ExpenseService) {
+    this.expenses$ = this.expenseService.expenses$;
   }
 
   remove(id: number): void {
     this.expenseService.removeExpense(id);
+  }
+
+  getTotal(expenses: Expense[] | null | undefined): number {
+    if (!expenses) return 0;
+    return expenses.reduce((sum, e) => sum + e.amount, 0);
   }
 }
